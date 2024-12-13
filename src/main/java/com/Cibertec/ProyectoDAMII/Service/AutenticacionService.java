@@ -1,7 +1,7 @@
 package com.Cibertec.ProyectoDAMII.Service;
 
-import com.Cibertec.ProyectoDAMII.Clases.Usuario;
-import com.Cibertec.ProyectoDAMII.Repository.UsuarioRepository;
+import com.Cibertec.ProyectoDAMII.Clases.Cliente;
+import com.Cibertec.ProyectoDAMII.Repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,35 +11,30 @@ import java.util.Optional;
 public class AutenticacionService {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private ClienteRepository clienteRepository;
 
-    public boolean login(String correo, String contrasenia) {
-        // Buscar el usuario por correo
-        Optional<Usuario> usuario = usuarioRepository.findByCorreo(correo);
+    public String login(String correo, String contrasenia) {
+        Optional<Cliente> clienteOpt = clienteRepository.findByEmail(correo);
 
-        // Si el usuario existe, compara la contraseña
-        if (usuario.isPresent()) {
-            return usuario.get().getContra().equals(contrasenia); // Comparación sin encriptación
+        if (clienteOpt.isPresent() && clienteOpt.get().getClave().equals(contrasenia)) {
+            Cliente cliente = clienteOpt.get();
+            return cliente.getNombre();
         }
 
-        // Si no existe el usuario, devuelve falso
-        return false;
+        return null;
     }
 
     public String register(String correo, String contrasenia) {
-        // Verificar si el correo ya existe en la base de datos
-        Optional<Usuario> usuarioExistente = usuarioRepository.findByCorreo(correo);
+        Optional<Cliente> usuarioExistente = clienteRepository.findByEmail(correo);
         if (usuarioExistente.isPresent()) {
             return "El usuario ya existe";
         }
 
-        // Si el usuario no existe, lo creamos
-        Usuario nuevoUsuario = new Usuario();
-        nuevoUsuario.setCorreo(correo);
-        nuevoUsuario.setContra(contrasenia); // Contraseña sin encriptación
+        Cliente nuevoUsuario = new Cliente();
+        nuevoUsuario.setEmail(correo);
+        nuevoUsuario.setClave(contrasenia);
 
-        // Guardamos el nuevo usuario
-        usuarioRepository.save(nuevoUsuario);
+        clienteRepository.save(nuevoUsuario);
         return "Registro exitoso";
     }
 }

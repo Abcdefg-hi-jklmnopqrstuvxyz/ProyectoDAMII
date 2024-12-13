@@ -17,13 +17,15 @@ public class AutenticacionController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String correo, @RequestParam String contrasenia) {
-        boolean success = autenticacionService.login(correo, contrasenia);
-        if (success) {
-            return ResponseEntity.ok("Login exitoso");
+        String nombre = autenticacionService.login(correo, contrasenia);
+
+        if (nombre != null) {
+            return ResponseEntity.ok("Login exitoso, bienvenido " + nombre);
         } else {
             return ResponseEntity.status(401).body("Credenciales inválidas");
         }
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestParam String correo, @RequestParam String contrasenia) {
